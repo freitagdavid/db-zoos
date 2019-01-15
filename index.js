@@ -70,12 +70,24 @@ server.delete('/api/zoos/:id', (req, res) => {
 
 server.put('/api/zoos/:id', (req, res) => {
     const { id } = req.params;
-    if (!req.body.name) {
-        zooId404(res);
+    const data = req.body;
+    console.log(data);
+    if (!data.name) {
+        res.status(400).json({ errMessage: 'Please specify a new name.' });
+    } else {
+        db('zoos')
+            .where('id', 'like', id)
+            .update(data)
+            .then(result => {
+                if (result === 0) {
+                    zooId404(res);
+                } else {
+                    res.status(200).json({
+                        success: `Successfully updated zoo ${id}`,
+                    });
+                }
+            });
     }
-    db('zoos')
-        .where('id', 'like', id)
-        .then(result => {});
 });
 
 const port = 3300;
