@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const knex = require('knex');
 const dbConfig = require('./knexfile');
+const { zooId404 } = require('./helpers/error');
 const server = express();
 
 server.use(express.json());
@@ -38,9 +39,7 @@ server.get('/api/zoos/:id', (req, res) => {
         .where('id', 'like', id)
         .then(result => {
             if (result.length === 0) {
-                res.status(404).json({
-                    errMessage: 'A zoo by this id does not exist.',
-                });
+                zooId404(res);
             } else {
                 res.status(200).json(result);
             }
@@ -61,14 +60,22 @@ server.delete('/api/zoos/:id', (req, res) => {
                     success: `Successfully deleted zoo ${id}`,
                 });
             } else {
-                res.status(404).json({
-                    errMessage: 'A zoo by this id does not exist',
-                });
+                zooId404(res);
             }
         })
         .catch(err => {
             res.status(500).json(err);
         });
+});
+
+server.put('/api/zoos/:id', (req, res) => {
+    const { id } = req.params;
+    if (!req.body.name) {
+        zooId404(res);
+    }
+    db('zoos')
+        .where('id', 'like', id)
+        .then(result => {});
 });
 
 const port = 3300;
