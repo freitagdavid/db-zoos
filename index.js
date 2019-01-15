@@ -25,7 +25,6 @@ server.post('/api/zoos', (req, res) => {
   .then(result => {
     res.status(201).json({result})
   }).catch(err => {
-    console.log(req.body)
     res.status(500).json(err)
   })
 })
